@@ -1,680 +1,93 @@
 <!DOCTYPE html>
 <html>
-<head>
-    
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    
-        <script>
-            L_NO_TOUCH = false;
-            L_DISABLE_3D = false;
-        </script>
-    
-    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
-    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+  <head>
+    <title>Simple Route Map</title>
+    <!-- Basic CSS for map container -->
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+
+    <!-- Include Leaflet CSS and JS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
-    
-            <meta name="viewport" content="width=device-width,
-                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <style>
-                #map_86115bc06e44c8e7fe0dae8c0336e46c {
-                    position: relative;
-                    width: 100.0%;
-                    height: 100.0%;
-                    left: 0.0%;
-                    top: 0.0%;
-                }
-                .leaflet-container { font-size: 1rem; }
-            </style>
-        
-</head>
-<body>
-    
-    
-            <div class="folium-map" id="map_86115bc06e44c8e7fe0dae8c0336e46c" ></div>
-        
-</body>
-<script>
-    
-    
-            var map_86115bc06e44c8e7fe0dae8c0336e46c = L.map(
-                "map_86115bc06e44c8e7fe0dae8c0336e46c",
-                {
-                    center: [13.4013, 121.9694],
-                    crs: L.CRS.EPSG3857,
-                    ...{
-  "zoom": 11,
-  "zoomControl": true,
-  "preferCanvas": false,
-}
+  </head>
+  <body>
+    <!-- Map container -->
+    <div id="map"></div>
 
-                }
-            );
+    <script>
+      // Create map centered on Marinduque
+      var map = L.map("map").setView([13.4013, 121.9694], 11);
 
-            
+      // Add OpenStreetMap tiles
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
 
-        
-    
-            var tile_layer_c8ed0414012f7cde93ed02427300211d = L.tileLayer(
-                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {
-  "minZoom": 0,
-  "maxZoom": 19,
-  "maxNativeZoom": 19,
-  "noWrap": false,
-  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
-  "subdomains": "abc",
-  "detectRetina": false,
-  "tms": false,
-  "opacity": 1,
-}
+      // Define route coordinates
+      var routes = [
+        {
+          name: "Boac to Mogpog",
+          start: [13.4488, 121.8386],
+          end: [13.4819, 121.8637],
+        },
+        {
+          name: "Mogpog to Santa Cruz",
+          start: [13.4819, 121.8637],
+          end: [13.428, 122.0094],
+        },
+        {
+          name: "Santa Cruz to Torrijos",
+          start: [13.428, 122.0094],
+          end: [13.3127, 122.0871],
+        },
+        {
+          name: "Torrijos to Buenavista",
+          start: [13.3127, 122.0871],
+          end: [13.2574, 121.9226],
+        },
+        {
+          name: "Buenavista to Gasan",
+          start: [13.2574, 121.9226],
+          end: [13.3197, 121.8685],
+        },
+        {
+          name: "Gasan to Boac",
+          start: [13.3197, 121.8685],
+          end: [13.4488, 121.8386],
+        },
+      ];
 
-            );
-        
-    
-            tile_layer_c8ed0414012f7cde93ed02427300211d.addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var marker_85dad4eb8613495f8953cded8b280c63 = L.marker(
-                [13.4488, 121.8386],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_db3ca11ffbcb7ac495a431a56e80d2c5 = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "green",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_f87d24e0a0307df892f6f3d488993e5b = L.popup({
-  "maxWidth": "100%",
-});
+      // Draw routes and add markers
+      routes.forEach(function (route) {
+        // Add start marker
+        L.marker(route.start)
+          .bindPopup("Start: " + route.name)
+          .addTo(map);
 
-        
-            
-                var html_62278bdb615e4cc4a91890c5f1bdf795 = $(`<div id="html_62278bdb615e4cc4a91890c5f1bdf795" style="width: 100.0%; height: 100.0%;">Start: Boac to Mogpog</div>`)[0];
-                popup_f87d24e0a0307df892f6f3d488993e5b.setContent(html_62278bdb615e4cc4a91890c5f1bdf795);
-            
-        
+        // Add end marker
+        L.marker(route.end)
+          .bindPopup("End: " + route.name)
+          .addTo(map);
 
-        marker_85dad4eb8613495f8953cded8b280c63.bindPopup(popup_f87d24e0a0307df892f6f3d488993e5b)
-        ;
-
-        
-    
-    
-                marker_85dad4eb8613495f8953cded8b280c63.setIcon(icon_db3ca11ffbcb7ac495a431a56e80d2c5);
-            
-    
-            var marker_3e7a6429c5c26487a89f919edcb4eb09 = L.marker(
-                [13.4819, 121.8637],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_4598e052df7e194715e47e019dd992b0 = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "blue",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_2a08116a853f4f16c24bce8ce7ed9a83 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_0c737eee332458e2d25cd1739270d090 = $(`<div id="html_0c737eee332458e2d25cd1739270d090" style="width: 100.0%; height: 100.0%;">End: Boac to Mogpog</div>`)[0];
-                popup_2a08116a853f4f16c24bce8ce7ed9a83.setContent(html_0c737eee332458e2d25cd1739270d090);
-            
-        
-
-        marker_3e7a6429c5c26487a89f919edcb4eb09.bindPopup(popup_2a08116a853f4f16c24bce8ce7ed9a83)
-        ;
-
-        
-    
-    
-                marker_3e7a6429c5c26487a89f919edcb4eb09.setIcon(icon_4598e052df7e194715e47e019dd992b0);
-            
-    
-            var poly_line_fcd6bdc982543599b5290bc74b3d97b3 = L.polyline(
-                [[13.4488, 121.8386], [13.4819, 121.8637]],
-                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-        var popup_fa0d03119455315b1c824027acbde3e2 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_05ef72a9a9577519d1f1691fa8538a8d = $(`<div id="html_05ef72a9a9577519d1f1691fa8538a8d" style="width: 100.0%; height: 100.0%;">Route 1: Boac to Mogpog</div>`)[0];
-                popup_fa0d03119455315b1c824027acbde3e2.setContent(html_05ef72a9a9577519d1f1691fa8538a8d);
-            
-        
-
-        poly_line_fcd6bdc982543599b5290bc74b3d97b3.bindPopup(popup_fa0d03119455315b1c824027acbde3e2)
-        ;
-
-        
-    
-    
-            var marker_f3217081088bc7706943b6227dfd4497 = L.marker(
-                [13.4819, 121.8637],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_63bf36665e0ef86959644c9ea7cdb12c = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "green",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_58c3a1715767c86db0a5da8ed74d36a7 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_bba01bd0515b1cbfa3a11490a7004291 = $(`<div id="html_bba01bd0515b1cbfa3a11490a7004291" style="width: 100.0%; height: 100.0%;">Start: Mogpog to Santa Cruz</div>`)[0];
-                popup_58c3a1715767c86db0a5da8ed74d36a7.setContent(html_bba01bd0515b1cbfa3a11490a7004291);
-            
-        
-
-        marker_f3217081088bc7706943b6227dfd4497.bindPopup(popup_58c3a1715767c86db0a5da8ed74d36a7)
-        ;
-
-        
-    
-    
-                marker_f3217081088bc7706943b6227dfd4497.setIcon(icon_63bf36665e0ef86959644c9ea7cdb12c);
-            
-    
-            var marker_82389041b76bbb88ff0e1f3379f8ba5b = L.marker(
-                [13.428, 122.0094],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_2bd009d45dd49a9e33713ed9278a2eec = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "blue",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_4a630f88c36d1e43b0794b441c13d308 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_899ee4def29610c29037078b2343e6b6 = $(`<div id="html_899ee4def29610c29037078b2343e6b6" style="width: 100.0%; height: 100.0%;">End: Mogpog to Santa Cruz</div>`)[0];
-                popup_4a630f88c36d1e43b0794b441c13d308.setContent(html_899ee4def29610c29037078b2343e6b6);
-            
-        
-
-        marker_82389041b76bbb88ff0e1f3379f8ba5b.bindPopup(popup_4a630f88c36d1e43b0794b441c13d308)
-        ;
-
-        
-    
-    
-                marker_82389041b76bbb88ff0e1f3379f8ba5b.setIcon(icon_2bd009d45dd49a9e33713ed9278a2eec);
-            
-    
-            var poly_line_5dbef7dee4dc0eaa35a96deeb24b5d8c = L.polyline(
-                [[13.4819, 121.8637], [13.428, 122.0094]],
-                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-        var popup_ee9aae20faa06898f3fc8dad5476e33b = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_6083efd484f753e5d49f6e4fcc6fc11e = $(`<div id="html_6083efd484f753e5d49f6e4fcc6fc11e" style="width: 100.0%; height: 100.0%;">Route 2: Mogpog to Santa Cruz</div>`)[0];
-                popup_ee9aae20faa06898f3fc8dad5476e33b.setContent(html_6083efd484f753e5d49f6e4fcc6fc11e);
-            
-        
-
-        poly_line_5dbef7dee4dc0eaa35a96deeb24b5d8c.bindPopup(popup_ee9aae20faa06898f3fc8dad5476e33b)
-        ;
-
-        
-    
-    
-            var marker_63d01a6c198a8bb2418363ae2e3c92f6 = L.marker(
-                [13.428, 122.0094],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_9ee717f6b8d2d5dbfb4827a10f9cda9e = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "green",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_b8800d1b98edb04bff4e3467c8017a47 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_ec93c133b9a99895f4687f67675fae4a = $(`<div id="html_ec93c133b9a99895f4687f67675fae4a" style="width: 100.0%; height: 100.0%;">Start: Santa Cruz to Torrijos</div>`)[0];
-                popup_b8800d1b98edb04bff4e3467c8017a47.setContent(html_ec93c133b9a99895f4687f67675fae4a);
-            
-        
-
-        marker_63d01a6c198a8bb2418363ae2e3c92f6.bindPopup(popup_b8800d1b98edb04bff4e3467c8017a47)
-        ;
-
-        
-    
-    
-                marker_63d01a6c198a8bb2418363ae2e3c92f6.setIcon(icon_9ee717f6b8d2d5dbfb4827a10f9cda9e);
-            
-    
-            var marker_14acc4c171d5e4a4e392d4482cd69de2 = L.marker(
-                [13.3127, 122.0871],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_a9298fd062bc499291a8e570ca431e3f = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "blue",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_5cc3b963a182906c577b6776994b0b77 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_9c5fbd3bc9651d2ead912465d7a34cbd = $(`<div id="html_9c5fbd3bc9651d2ead912465d7a34cbd" style="width: 100.0%; height: 100.0%;">End: Santa Cruz to Torrijos</div>`)[0];
-                popup_5cc3b963a182906c577b6776994b0b77.setContent(html_9c5fbd3bc9651d2ead912465d7a34cbd);
-            
-        
-
-        marker_14acc4c171d5e4a4e392d4482cd69de2.bindPopup(popup_5cc3b963a182906c577b6776994b0b77)
-        ;
-
-        
-    
-    
-                marker_14acc4c171d5e4a4e392d4482cd69de2.setIcon(icon_a9298fd062bc499291a8e570ca431e3f);
-            
-    
-            var poly_line_c21431afce39ede1f56951caba10d386 = L.polyline(
-                [[13.428, 122.0094], [13.3127, 122.0871]],
-                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-        var popup_dee18dacc2b9a6d0606c91bced8bcc5b = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_018143b059c46982a0afe1581bd6791f = $(`<div id="html_018143b059c46982a0afe1581bd6791f" style="width: 100.0%; height: 100.0%;">Route 3: Santa Cruz to Torrijos</div>`)[0];
-                popup_dee18dacc2b9a6d0606c91bced8bcc5b.setContent(html_018143b059c46982a0afe1581bd6791f);
-            
-        
-
-        poly_line_c21431afce39ede1f56951caba10d386.bindPopup(popup_dee18dacc2b9a6d0606c91bced8bcc5b)
-        ;
-
-        
-    
-    
-            var marker_b98ad2dbfddb50bcccb572abcd10ed8a = L.marker(
-                [13.3127, 122.0871],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_7941cfee472ff66455802582a755c5c8 = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "green",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_357e95311c3e9d361179db6d401ee441 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_6bd27f209d0d9c22ed565ae807d43cdf = $(`<div id="html_6bd27f209d0d9c22ed565ae807d43cdf" style="width: 100.0%; height: 100.0%;">Start: Torrijos to Buenavista</div>`)[0];
-                popup_357e95311c3e9d361179db6d401ee441.setContent(html_6bd27f209d0d9c22ed565ae807d43cdf);
-            
-        
-
-        marker_b98ad2dbfddb50bcccb572abcd10ed8a.bindPopup(popup_357e95311c3e9d361179db6d401ee441)
-        ;
-
-        
-    
-    
-                marker_b98ad2dbfddb50bcccb572abcd10ed8a.setIcon(icon_7941cfee472ff66455802582a755c5c8);
-            
-    
-            var marker_faa7d6403cfdc39aa21d81b19383bb3a = L.marker(
-                [13.2574, 121.9226],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_8ea7bf50d8ae0ba4ad7bd996921d07a0 = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "blue",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_f1d0e5518207263fd82e2f0d370f504f = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_d007ac0dc2d5217d4588b4a99e0ac89e = $(`<div id="html_d007ac0dc2d5217d4588b4a99e0ac89e" style="width: 100.0%; height: 100.0%;">End: Torrijos to Buenavista</div>`)[0];
-                popup_f1d0e5518207263fd82e2f0d370f504f.setContent(html_d007ac0dc2d5217d4588b4a99e0ac89e);
-            
-        
-
-        marker_faa7d6403cfdc39aa21d81b19383bb3a.bindPopup(popup_f1d0e5518207263fd82e2f0d370f504f)
-        ;
-
-        
-    
-    
-                marker_faa7d6403cfdc39aa21d81b19383bb3a.setIcon(icon_8ea7bf50d8ae0ba4ad7bd996921d07a0);
-            
-    
-            var poly_line_f287c3d32cdcc90583be4f8461621499 = L.polyline(
-                [[13.3127, 122.0871], [13.2574, 121.9226]],
-                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-        var popup_fa1dfca6c4e52eb41867f6f591c6aa81 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_2299a1a4de852399ad2032547c718b47 = $(`<div id="html_2299a1a4de852399ad2032547c718b47" style="width: 100.0%; height: 100.0%;">Route 4: Torrijos to Buenavista</div>`)[0];
-                popup_fa1dfca6c4e52eb41867f6f591c6aa81.setContent(html_2299a1a4de852399ad2032547c718b47);
-            
-        
-
-        poly_line_f287c3d32cdcc90583be4f8461621499.bindPopup(popup_fa1dfca6c4e52eb41867f6f591c6aa81)
-        ;
-
-        
-    
-    
-            var marker_5b1fba5df3502717bf10494eb1116e04 = L.marker(
-                [13.2574, 121.9226],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_bc089b2c29095a09d7a727cebe350796 = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "green",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_3b51f848ca7fc3c3c21667ca8522b036 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_74a6f6e230723f8a7a00b0e23dfdda14 = $(`<div id="html_74a6f6e230723f8a7a00b0e23dfdda14" style="width: 100.0%; height: 100.0%;">Start: Buenavista to Gasan</div>`)[0];
-                popup_3b51f848ca7fc3c3c21667ca8522b036.setContent(html_74a6f6e230723f8a7a00b0e23dfdda14);
-            
-        
-
-        marker_5b1fba5df3502717bf10494eb1116e04.bindPopup(popup_3b51f848ca7fc3c3c21667ca8522b036)
-        ;
-
-        
-    
-    
-                marker_5b1fba5df3502717bf10494eb1116e04.setIcon(icon_bc089b2c29095a09d7a727cebe350796);
-            
-    
-            var marker_c02093417bb52209d9e531f9f23efa9e = L.marker(
-                [13.3197, 121.8685],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_74c138f68fc3b4f64d1732c6b2fac9db = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "blue",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_2327a0b5bf03c1e5616e6e9fa9a90873 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_ad9744368c264ae806fe9bfb9c7f85c4 = $(`<div id="html_ad9744368c264ae806fe9bfb9c7f85c4" style="width: 100.0%; height: 100.0%;">End: Buenavista to Gasan</div>`)[0];
-                popup_2327a0b5bf03c1e5616e6e9fa9a90873.setContent(html_ad9744368c264ae806fe9bfb9c7f85c4);
-            
-        
-
-        marker_c02093417bb52209d9e531f9f23efa9e.bindPopup(popup_2327a0b5bf03c1e5616e6e9fa9a90873)
-        ;
-
-        
-    
-    
-                marker_c02093417bb52209d9e531f9f23efa9e.setIcon(icon_74c138f68fc3b4f64d1732c6b2fac9db);
-            
-    
-            var poly_line_c2d9cf10357b54d6d7051e600e94187e = L.polyline(
-                [[13.2574, 121.9226], [13.3197, 121.8685]],
-                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-        var popup_c9faa619b7e9f4e19d9b409158905238 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_3c8e3b980c6bba91fc461d1cd395cf96 = $(`<div id="html_3c8e3b980c6bba91fc461d1cd395cf96" style="width: 100.0%; height: 100.0%;">Route 5: Buenavista to Gasan</div>`)[0];
-                popup_c9faa619b7e9f4e19d9b409158905238.setContent(html_3c8e3b980c6bba91fc461d1cd395cf96);
-            
-        
-
-        poly_line_c2d9cf10357b54d6d7051e600e94187e.bindPopup(popup_c9faa619b7e9f4e19d9b409158905238)
-        ;
-
-        
-    
-    
-            var marker_c2805c49020057951f766c392d4bb60c = L.marker(
-                [13.3197, 121.8685],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_0bbc31c3893a407c7b36e8ec0282cbe9 = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "green",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_8726e224653af26287759aff3e99699b = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_97dd1eb161c976d0b706a9f532c1aa08 = $(`<div id="html_97dd1eb161c976d0b706a9f532c1aa08" style="width: 100.0%; height: 100.0%;">Start: Gasan to Boac</div>`)[0];
-                popup_8726e224653af26287759aff3e99699b.setContent(html_97dd1eb161c976d0b706a9f532c1aa08);
-            
-        
-
-        marker_c2805c49020057951f766c392d4bb60c.bindPopup(popup_8726e224653af26287759aff3e99699b)
-        ;
-
-        
-    
-    
-                marker_c2805c49020057951f766c392d4bb60c.setIcon(icon_0bbc31c3893a407c7b36e8ec0282cbe9);
-            
-    
-            var marker_78e634941aab6fc508735758555149e5 = L.marker(
-                [13.4488, 121.8386],
-                {
-}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-            var icon_ef40d3d2ee12472fb3f442f197e36891 = L.AwesomeMarkers.icon(
-                {
-  "markerColor": "blue",
-  "iconColor": "white",
-  "icon": "info-sign",
-  "prefix": "glyphicon",
-  "extraClasses": "fa-rotate-0",
-}
-            );
-        
-    
-        var popup_aa0907dcbdc30890ad204443ddd3fabb = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_1336da89fbd2ef5e9f62907bf335b221 = $(`<div id="html_1336da89fbd2ef5e9f62907bf335b221" style="width: 100.0%; height: 100.0%;">End: Gasan to Boac</div>`)[0];
-                popup_aa0907dcbdc30890ad204443ddd3fabb.setContent(html_1336da89fbd2ef5e9f62907bf335b221);
-            
-        
-
-        marker_78e634941aab6fc508735758555149e5.bindPopup(popup_aa0907dcbdc30890ad204443ddd3fabb)
-        ;
-
-        
-    
-    
-                marker_78e634941aab6fc508735758555149e5.setIcon(icon_ef40d3d2ee12472fb3f442f197e36891);
-            
-    
-            var poly_line_ca6ca695db452b56c64eb96bb7555008 = L.polyline(
-                [[13.3197, 121.8685], [13.4488, 121.8386]],
-                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_86115bc06e44c8e7fe0dae8c0336e46c);
-        
-    
-        var popup_0df386e138d7dcd02e62e5a4e45a3a29 = L.popup({
-  "maxWidth": "100%",
-});
-
-        
-            
-                var html_7fb985f5a03dba7e75174e2a0cab9080 = $(`<div id="html_7fb985f5a03dba7e75174e2a0cab9080" style="width: 100.0%; height: 100.0%;">Route 6: Gasan to Boac</div>`)[0];
-                popup_0df386e138d7dcd02e62e5a4e45a3a29.setContent(html_7fb985f5a03dba7e75174e2a0cab9080);
-            
-        
-
-        poly_line_ca6ca695db452b56c64eb96bb7555008.bindPopup(popup_0df386e138d7dcd02e62e5a4e45a3a29)
-        ;
-
-        
-    
-</script>
+        // Draw route line
+        L.polyline([route.start, route.end], {
+          color: "red",
+          weight: 2,
+        })
+          .bindPopup(route.name)
+          .addTo(map);
+      });
+    </script>
+  </body>
 </html>
