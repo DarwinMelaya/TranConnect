@@ -353,13 +353,27 @@ class TransConnectApp:
             foreground='#2196F3'
         ).pack(pady=(0, 20))
         
-        # Routes container
-        routes_container = ttk.Frame(routes_frame)
-        routes_container.pack(fill=tk.BOTH, expand=True, padx=40)
+        # Create canvas and scrollbar for scrolling
+        canvas = tk.Canvas(routes_frame)
+        scrollbar = ttk.Scrollbar(routes_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+        
+        # Configure scrolling
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=canvas.winfo_reqwidth())
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Pack scrollbar and canvas
+        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True, padx=(40, 0))
         
         # Display routes in modern cards
         for route_id, route_info in ROUTES.items():
-            route_card = ttk.Frame(routes_container, style='Card.TFrame')
+            route_card = ttk.Frame(scrollable_frame, style='Card.TFrame')
             route_card.pack(pady=10, fill=tk.X, ipady=15)
             
             # Route header
@@ -417,13 +431,23 @@ class TransConnectApp:
                 foreground='#424242'
             ).pack(anchor="w")
         
-        # Back button
+        # Back button with unbinding
+        def on_back():
+            self.root.unbind_all("<MouseWheel>")  # Unbind mousewheel before destroying
+            self.show_user_dashboard()
+        
         ttk.Button(
             routes_frame,
             text="Back to Dashboard",
             style='Action.TButton',
-            command=self.show_user_dashboard
+            command=on_back
         ).pack(pady=30)
+        
+        # Configure canvas scrolling
+        def on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        
+        self.root.bind_all("<MouseWheel>", on_mousewheel)
 
     def show_booking_form(self):
         # Clear previous frames
