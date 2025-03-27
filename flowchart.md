@@ -26,6 +26,7 @@ flowchart TD
     N -->|Success| H
     N -->|Failed| K
 
-    J --> H
+    J --> O[View Map]
+    O --> H
     L --> H
 ```

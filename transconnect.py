@@ -22,36 +22,43 @@ bookings: List[Dict] = []
 ROUTES = {
     1: {
         "name": "Boac to Mogpog",
-        "start_gps": "13.4462° N, 121.8354° E",  # Boac coordinates
-        "end_gps": "13.4871° N, 121.8636° E",    # Mogpog coordinates
+        "start_gps": "13.4488, 121.8386",  # Boac town proper
+        "end_gps": "13.4819, 121.8637",    # Mogpog town proper
         "seats": 15,
         "schedule": "7:00 AM"
     },
     2: {
-        "name": "Mogpog to Santa Cruz",
-        "start_gps": "13.4871° N, 121.8636° E",  # Mogpog coordinates
-        "end_gps": "13.4276° N, 122.0087° E",    # Santa Cruz coordinates
+        "name": "Mogpog to Santa Cruz", 
+        "start_gps": "13.4819, 121.8637",  # Mogpog town proper
+        "end_gps": "13.4280, 122.0094",    # Santa Cruz town proper
         "seats": 15,
         "schedule": "9:00 AM"
     },
     3: {
         "name": "Santa Cruz to Torrijos",
-        "start_gps": "13.4276° N, 122.0087° E",  # Santa Cruz coordinates
-        "end_gps": "13.3222° N, 122.0871° E",    # Torrijos coordinates
+        "start_gps": "13.4280, 122.0094",  # Santa Cruz town proper
+        "end_gps": "13.3127, 122.0871",    # Torrijos town proper
         "seats": 15,
         "schedule": "11:00 AM"
     },
     4: {
-        "name": "Torrijos to Gasan",
-        "start_gps": "13.3222° N, 122.0871° E",  # Torrijos coordinates
-        "end_gps": "13.3197° N, 121.8501° E",    # Gasan coordinates
+        "name": "Torrijos to Buenavista",
+        "start_gps": "13.3127, 122.0871",  # Torrijos town proper
+        "end_gps": "13.2574, 121.9226",    # Buenavista town proper
         "seats": 15,
         "schedule": "1:00 PM"
     },
     5: {
-        "name": "Gasan to Buenavista",
-        "start_gps": "13.3197° N, 121.8501° E",  # Gasan coordinates
-        "end_gps": "13.2574° N, 121.9125° E",    # Buenavista coordinates
+        "name": "Buenavista to Gasan",
+        "start_gps": "13.2574, 121.9226",  # Buenavista town proper
+        "end_gps": "13.3197, 121.8685",    # Gasan town proper
+        "seats": 15,
+        "schedule": "3:00 PM"
+    },
+    6: {
+        "name": "Gasan to Boac",
+        "start_gps": "13.3197, 121.8685",  # Gasan town proper
+        "end_gps": "13.4488, 121.8386",    # Boac town proper
         "seats": 15,
         "schedule": "3:00 PM"
     }
@@ -651,86 +658,54 @@ class TransConnectApp:
             foreground='#2196F3'
         ).pack(pady=(0, 20))
         
-        # Get current location
-        current_location = get_current_location()
+        # Create a map centered on Marinduque
+        m = folium.Map(
+            location=[13.4013, 121.9694],
+            zoom_start=11
+        )
         
-        if current_location:
-            # Create a map centered on Marinduque
-            m = folium.Map(
-                location=[13.4013, 121.9694],
-                zoom_start=11
-            )
+        # Add markers and lines for all routes
+        for route_id, route in ROUTES.items():
+            # Parse start and end coordinates
+            start_coords = [float(x.strip('° NSEW')) for x in route['start_gps'].split(',')]
+            end_coords = [float(x.strip('° NSEW')) for x in route['end_gps'].split(',')]
             
-            # Add marker for current location
+            # Add markers for start and end points
             folium.Marker(
-                [13.4013, 121.9694],
-                popup="Your Location",
-                icon=folium.Icon(color='red', icon='info-sign')
+                start_coords,
+                popup=f"Start: {route['name']}",
+                icon=folium.Icon(color='green')
             ).add_to(m)
             
-            # Add markers and lines for all routes
-            for route_id, route in ROUTES.items():
-                # Parse start and end coordinates
-                start_coords = [float(x.strip('° NSEW')) for x in route['start_gps'].split(',')]
-                end_coords = [float(x.strip('° NSEW')) for x in route['end_gps'].split(',')]
-                
-                # Add markers for start and end points
-                folium.Marker(
-                    start_coords,
-                    popup=f"Start: {route['name']}",
-                    icon=folium.Icon(color='green')
-                ).add_to(m)
-                
-                folium.Marker(
-                    end_coords,
-                    popup=f"End: {route['name']}",
-                    icon=folium.Icon(color='blue')
-                ).add_to(m)
-                
-                # Draw line between points
-                folium.PolyLine(
-                    locations=[start_coords, end_coords],
-                    weight=2,
-                    color='red',
-                    popup=f"Route {route_id}: {route['name']}"
-                ).add_to(m)
+            folium.Marker(
+                end_coords,
+                popup=f"End: {route['name']}",
+                icon=folium.Icon(color='blue')
+            ).add_to(m)
             
-            # Save map to HTML file
-            map_file = "route_map.html"
-            m.save(map_file)
-            
-            # Create info frame
-            info_frame = ttk.Frame(map_frame, style='Card.TFrame')
-            info_frame.pack(fill=tk.X, padx=40, pady=20)
-            
-            ttk.Label(
-                info_frame,
-                text="Current Location",
-                font=("Helvetica", 14, "bold"),
-                foreground='#2196F3'
-            ).pack(pady=(10, 5), padx=20)
-            
-            ttk.Label(
-                info_frame,
-                text=str(current_location),
-                font=("Helvetica", 12),
-                foreground='#424242'
-            ).pack(pady=(0, 10), padx=20)
-            
-            # Button to open map in browser
-            ttk.Button(
-                info_frame,
-                text="Open Map in Browser",
-                style='Action.TButton',
-                command=lambda: webbrowser.open('file://' + os.path.realpath(map_file))
-            ).pack(pady=10)
-        else:
-            ttk.Label(
-                map_frame,
-                text="Unable to get location information",
-                font=("Helvetica", 14),
-                foreground='#757575'
-            ).pack()
+            # Draw line between points
+            folium.PolyLine(
+                locations=[start_coords, end_coords],
+                weight=2,
+                color='red',
+                popup=f"Route {route_id}: {route['name']}"
+            ).add_to(m)
+        
+        # Save map to HTML file
+        map_file = "route_map.html"
+        m.save(map_file)
+        
+        # Create info frame
+        info_frame = ttk.Frame(map_frame, style='Card.TFrame')
+        info_frame.pack(fill=tk.X, padx=40, pady=20)
+        
+        # Button to open map in browser
+        ttk.Button(
+            info_frame,
+            text="Open Map in Browser",
+            style='Action.TButton',
+            command=lambda: webbrowser.open('file://' + os.path.realpath(map_file))
+        ).pack(pady=10)
         
         # Back button
         ttk.Button(
