@@ -4,6 +4,12 @@ from typing import Dict, List
 import tkinter as tk
 from tkinter import ttk, messagebox
 import ttkbootstrap as ttk  # For modern styling (pip install ttkbootstrap)
+import folium
+from geopy.geocoders import Nominatim
+from geopy.location import Location
+from geopy import distance
+import webbrowser
+import os
 
 # Create in-memory storage using dictionaries and lists
 # users: stores user information like name, email, password, and their bookings
@@ -50,6 +56,18 @@ ROUTES = {
         "schedule": "3:00 PM"
     }
 }
+
+def get_current_location():
+    """Get the current location using geopy's Nominatim service"""
+    try:
+        geolocator = Nominatim(user_agent="transconnect")
+        # For demo purposes, we'll use Marinduque's center coordinates
+        # In a real app, you'd use device GPS or IP-based location
+        location = geolocator.reverse("13.4013° N, 121.9694° E")
+        return location
+    except Exception as e:
+        print(f"Error getting location: {e}")
+        return None
 
 class TransConnectApp:
     def __init__(self, root):
@@ -301,6 +319,15 @@ class TransConnectApp:
             style='Action.TButton',
             command=command
         ).pack(pady=(0, 20))
+        
+        # Add map button to dashboard
+        if title == "View Routes":
+            ttk.Button(
+                card,
+                text="View Map",
+                style='Action.TButton',
+                command=self.show_location_map
+            ).pack(pady=(0, 20))
 
     def handle_register(self, name, email, password):
         # Input validation
@@ -606,6 +633,112 @@ class TransConnectApp:
     def logout(self):
         self.current_user = None
         self.show_login_frame()
+
+    def show_location_map(self):
+        # Clear previous frames
+        for widget in self.main_frame.winfo_children()[1:]:
+            widget.destroy()
+        
+        # Create map container
+        map_frame = ttk.Frame(self.main_frame)
+        map_frame.pack(pady=20, fill=tk.BOTH, expand=True)
+        
+        # Header
+        ttk.Label(
+            map_frame,
+            text="Location & Routes Map",
+            font=("Helvetica", 24, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(0, 20))
+        
+        # Get current location
+        current_location = get_current_location()
+        
+        if current_location:
+            # Create a map centered on Marinduque
+            m = folium.Map(
+                location=[13.4013, 121.9694],
+                zoom_start=11
+            )
+            
+            # Add marker for current location
+            folium.Marker(
+                [13.4013, 121.9694],
+                popup="Your Location",
+                icon=folium.Icon(color='red', icon='info-sign')
+            ).add_to(m)
+            
+            # Add markers and lines for all routes
+            for route_id, route in ROUTES.items():
+                # Parse start and end coordinates
+                start_coords = [float(x.strip('° NSEW')) for x in route['start_gps'].split(',')]
+                end_coords = [float(x.strip('° NSEW')) for x in route['end_gps'].split(',')]
+                
+                # Add markers for start and end points
+                folium.Marker(
+                    start_coords,
+                    popup=f"Start: {route['name']}",
+                    icon=folium.Icon(color='green')
+                ).add_to(m)
+                
+                folium.Marker(
+                    end_coords,
+                    popup=f"End: {route['name']}",
+                    icon=folium.Icon(color='blue')
+                ).add_to(m)
+                
+                # Draw line between points
+                folium.PolyLine(
+                    locations=[start_coords, end_coords],
+                    weight=2,
+                    color='red',
+                    popup=f"Route {route_id}: {route['name']}"
+                ).add_to(m)
+            
+            # Save map to HTML file
+            map_file = "route_map.html"
+            m.save(map_file)
+            
+            # Create info frame
+            info_frame = ttk.Frame(map_frame, style='Card.TFrame')
+            info_frame.pack(fill=tk.X, padx=40, pady=20)
+            
+            ttk.Label(
+                info_frame,
+                text="Current Location",
+                font=("Helvetica", 14, "bold"),
+                foreground='#2196F3'
+            ).pack(pady=(10, 5), padx=20)
+            
+            ttk.Label(
+                info_frame,
+                text=str(current_location),
+                font=("Helvetica", 12),
+                foreground='#424242'
+            ).pack(pady=(0, 10), padx=20)
+            
+            # Button to open map in browser
+            ttk.Button(
+                info_frame,
+                text="Open Map in Browser",
+                style='Action.TButton',
+                command=lambda: webbrowser.open('file://' + os.path.realpath(map_file))
+            ).pack(pady=10)
+        else:
+            ttk.Label(
+                map_frame,
+                text="Unable to get location information",
+                font=("Helvetica", 14),
+                foreground='#757575'
+            ).pack()
+        
+        # Back button
+        ttk.Button(
+            map_frame,
+            text="Back to Dashboard",
+            style='Action.TButton',
+            command=self.show_user_dashboard
+        ).pack(pady=30)
 
 # Update the main function to use the GUI
 def main():

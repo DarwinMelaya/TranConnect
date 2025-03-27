@@ -33,6 +33,8 @@ View booking history
 
 pip install ttkbootstrap
 
+pip install geopy folium
+
 == Diagram Maker ==
 
 https://app.diagrams.net/
