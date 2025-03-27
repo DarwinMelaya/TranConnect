@@ -27,6 +27,27 @@ ROUTES = {
         "end_gps": "13.4276° N, 122.0087° E",    # Santa Cruz coordinates
         "seats": 15,
         "schedule": "9:00 AM"
+    },
+    3: {
+        "name": "Santa Cruz to Torrijos",
+        "start_gps": "13.4276° N, 122.0087° E",  # Santa Cruz coordinates
+        "end_gps": "13.3222° N, 122.0871° E",    # Torrijos coordinates
+        "seats": 15,
+        "schedule": "11:00 AM"
+    },
+    4: {
+        "name": "Torrijos to Gasan",
+        "start_gps": "13.3222° N, 122.0871° E",  # Torrijos coordinates
+        "end_gps": "13.3197° N, 121.8501° E",    # Gasan coordinates
+        "seats": 15,
+        "schedule": "1:00 PM"
+    },
+    5: {
+        "name": "Gasan to Buenavista",
+        "start_gps": "13.3197° N, 121.8501° E",  # Gasan coordinates
+        "end_gps": "13.2574° N, 121.9125° E",    # Buenavista coordinates
+        "seats": 15,
+        "schedule": "3:00 PM"
     }
 }
 
@@ -34,145 +55,252 @@ class TransConnectApp:
     def __init__(self, root):
         self.root = root
         self.root.title("TransConnect")
-        self.root.geometry("800x600")
+        self.root.geometry("1024x768")  # Larger window
         self.current_user = None
         
-        # Configure style
+        # Configure style with a modern theme and custom colors
         style = ttk.Style()
         style.theme_use('darkly')
+        
+        # Configure custom styles
+        style.configure('Header.TLabel', font=("Helvetica", 32, "bold"), foreground='#2196F3')
+        style.configure('SubHeader.TLabel', font=("Helvetica", 14), foreground='#757575')
+        style.configure('Card.TFrame', background='#2A2A2A', relief='raised', borderwidth=1)
+        style.configure('Action.TButton', font=("Helvetica", 11), padding=10)
         
         self.setup_main_frame()
         self.show_login_frame()
     
     def setup_main_frame(self):
-        self.main_frame = ttk.Frame(self.root, padding="20")
+        # Create main container with gradient background
+        self.main_frame = ttk.Frame(self.root, padding="40")
         self.main_frame.pack(fill=tk.BOTH, expand=True)
         
-        # Header
+        # Header with logo and tagline
         header = ttk.Label(
             self.main_frame,
             text="TransConnect",
-            font=("Helvetica", 24, "bold")
+            style='Header.TLabel'
         )
-        header.pack(pady=20)
+        header.pack(pady=(0, 5))
+        
+        subheader = ttk.Label(
+            self.main_frame,
+            text="Your Gateway to Seamless Travel in Marinduque",
+            style='SubHeader.TLabel'
+        )
+        subheader.pack(pady=(0, 30))
     
     def show_login_frame(self):
         # Clear previous frames
         for widget in self.main_frame.winfo_children()[1:]:
             widget.destroy()
         
-        # Login frame
-        login_frame = ttk.Frame(self.main_frame)
-        login_frame.pack(pady=20)
+        # Create card-like container
+        login_frame = ttk.Frame(self.main_frame, style='Card.TFrame')
+        login_frame.pack(pady=20, padx=20, ipadx=40, ipady=30)
         
-        # Email field
-        ttk.Label(login_frame, text="Email:").grid(row=0, column=0, pady=5)
-        email_entry = ttk.Entry(login_frame, width=30)
-        email_entry.grid(row=0, column=1, pady=5)
+        # Login header
+        ttk.Label(
+            login_frame,
+            text="Welcome Back",
+            font=("Helvetica", 18, "bold"),
+            foreground='#2196F3'
+        ).grid(row=0, column=0, columnspan=2, pady=(0, 20))
         
-        # Password field
-        ttk.Label(login_frame, text="Password:").grid(row=1, column=0, pady=5)
-        password_entry = ttk.Entry(login_frame, width=30, show="*")
-        password_entry.grid(row=1, column=1, pady=5)
+        # Styled input fields
+        ttk.Label(login_frame, text="Email:", font=("Helvetica", 11)).grid(row=1, column=0, pady=10, sticky='e', padx=10)
+        email_entry = ttk.Entry(login_frame, width=35, font=("Helvetica", 11))
+        email_entry.grid(row=1, column=1, pady=10, padx=10)
         
-        # Buttons
+        ttk.Label(login_frame, text="Password:", font=("Helvetica", 11)).grid(row=2, column=0, pady=10, sticky='e', padx=10)
+        password_entry = ttk.Entry(login_frame, width=35, show="•", font=("Helvetica", 11))
+        password_entry.grid(row=2, column=1, pady=10, padx=10)
+        
+        # Styled buttons
         button_frame = ttk.Frame(login_frame)
-        button_frame.grid(row=2, column=0, columnspan=2, pady=20)
+        button_frame.grid(row=3, column=0, columnspan=2, pady=25)
         
-        ttk.Button(
+        login_btn = ttk.Button(
             button_frame,
             text="Login",
+            style='Action.TButton',
             command=lambda: self.handle_login(email_entry.get(), password_entry.get())
-        ).pack(side=tk.LEFT, padx=5)
+        )
+        login_btn.pack(side=tk.LEFT, padx=10)
         
-        ttk.Button(
+        register_btn = ttk.Button(
             button_frame,
-            text="Register",
+            text="Create Account",
+            style='Action.TButton',
             command=self.show_register_frame
-        ).pack(side=tk.LEFT, padx=5)
+        )
+        register_btn.pack(side=tk.LEFT, padx=10)
     
     def show_register_frame(self):
         # Clear previous frames
         for widget in self.main_frame.winfo_children()[1:]:
             widget.destroy()
         
-        # Register frame
-        register_frame = ttk.Frame(self.main_frame)
-        register_frame.pack(pady=20)
+        # Create modern registration card
+        register_frame = ttk.Frame(self.main_frame, style='Card.TFrame')
+        register_frame.pack(pady=20, padx=40, ipadx=40, ipady=30)
         
-        # Registration fields
-        ttk.Label(register_frame, text="Name:").grid(row=0, column=0, pady=5)
-        name_entry = ttk.Entry(register_frame, width=30)
-        name_entry.grid(row=0, column=1, pady=5)
+        # Registration header
+        ttk.Label(
+            register_frame,
+            text="Create Your Account",
+            font=("Helvetica", 24, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(20, 10))
         
-        ttk.Label(register_frame, text="Email:").grid(row=1, column=0, pady=5)
-        email_entry = ttk.Entry(register_frame, width=30)
-        email_entry.grid(row=1, column=1, pady=5)
+        ttk.Label(
+            register_frame,
+            text="Join TransConnect today and start your journey",
+            font=("Helvetica", 12),
+            foreground='#757575'
+        ).pack(pady=(0, 30))
         
-        ttk.Label(register_frame, text="Password:").grid(row=2, column=0, pady=5)
-        password_entry = ttk.Entry(register_frame, width=30, show="*")
-        password_entry.grid(row=2, column=1, pady=5)
+        # Input container
+        input_frame = ttk.Frame(register_frame)
+        input_frame.pack(fill=tk.X, padx=20)
         
-        # Buttons
-        button_frame = ttk.Frame(register_frame)
-        button_frame.grid(row=3, column=0, columnspan=2, pady=20)
+        # Styled input fields
+        fields = [
+            ("Full Name", "name_entry"),
+            ("Email Address", "email_entry"),
+            ("Password", "password_entry", "*")
+        ]
         
-        ttk.Button(
-            button_frame,
-            text="Register",
-            command=lambda: self.handle_register(
-                name_entry.get(),
-                email_entry.get(),
-                password_entry.get()
+        entries = {}
+        for i, (label, key, *args) in enumerate(fields):
+            ttk.Label(
+                input_frame,
+                text=label,
+                font=("Helvetica", 11, "bold"),
+                foreground='#424242'
+            ).pack(anchor='w', pady=(10, 5))
+            
+            entry = ttk.Entry(
+                input_frame,
+                width=40,
+                font=("Helvetica", 11),
+                show="•" if args else ""
             )
-        ).pack(side=tk.LEFT, padx=5)
+            entry.pack(fill=tk.X, pady=(0, 10))
+            entries[key] = entry
         
-        ttk.Button(
+        # Button container
+        button_frame = ttk.Frame(register_frame)
+        button_frame.pack(pady=30)
+        
+        # Styled buttons
+        register_btn = ttk.Button(
+            button_frame,
+            text="Create Account",
+            style='Action.TButton',
+            command=lambda: self.handle_register(
+                entries['name_entry'].get(),
+                entries['email_entry'].get(),
+                entries['password_entry'].get()
+            )
+        )
+        register_btn.pack(side=tk.LEFT, padx=10)
+        
+        back_btn = ttk.Button(
             button_frame,
             text="Back to Login",
+            style='Action.TButton',
             command=self.show_login_frame
-        ).pack(side=tk.LEFT, padx=5)
+        )
+        back_btn.pack(side=tk.LEFT, padx=10)
 
     def show_user_dashboard(self):
         # Clear previous frames
         for widget in self.main_frame.winfo_children()[1:]:
             widget.destroy()
         
-        # Dashboard frame
+        # Create modern dashboard layout
         dashboard_frame = ttk.Frame(self.main_frame)
         dashboard_frame.pack(pady=20, fill=tk.BOTH, expand=True)
         
-        # Welcome message
+        # Welcome section with user info
+        welcome_frame = ttk.Frame(dashboard_frame, style='Card.TFrame')
+        welcome_frame.pack(fill=tk.X, padx=20, pady=10, ipady=15)
+        
         ttk.Label(
-            dashboard_frame,
-            text=f"Welcome, {users[self.current_user]['name']}!",
-            font=("Helvetica", 16)
-        ).pack(pady=10)
+            welcome_frame,
+            text=f"Welcome back, {users[self.current_user]['name']}",
+            font=("Helvetica", 20, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(10, 5))
         
-        # Dashboard buttons
-        ttk.Button(
-            dashboard_frame,
-            text="View Routes",
-            command=self.show_routes
-        ).pack(pady=5, fill=tk.X)
+        ttk.Label(
+            welcome_frame,
+            text="Manage your travel arrangements below",
+            font=("Helvetica", 12),
+            foreground='#757575'
+        ).pack()
+        
+        # Dashboard grid layout
+        grid_frame = ttk.Frame(dashboard_frame)
+        grid_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        grid_frame.columnconfigure(0, weight=1)
+        grid_frame.columnconfigure(1, weight=1)
+        
+        # Dashboard cards
+        self.create_dashboard_card(
+            grid_frame, 0, 0,
+            "View Routes",
+            "Browse available transportation routes",
+            self.show_routes
+        )
+        
+        self.create_dashboard_card(
+            grid_frame, 0, 1,
+            "Book a Seat",
+            "Reserve your spot on a route",
+            self.show_booking_form
+        )
+        
+        self.create_dashboard_card(
+            grid_frame, 1, 0,
+            "My Bookings",
+            "Check your travel schedule",
+            self.show_my_bookings
+        )
+        
+        self.create_dashboard_card(
+            grid_frame, 1, 1,
+            "Logout",
+            "Sign out of your account",
+            self.logout
+        )
+
+    def create_dashboard_card(self, parent, row, col, title, description, command):
+        card = ttk.Frame(parent, style='Card.TFrame')
+        card.grid(row=row, column=col, padx=10, pady=10, sticky='nsew')
+        
+        ttk.Label(
+            card,
+            text=title,
+            font=("Helvetica", 16, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(20, 5))
+        
+        ttk.Label(
+            card,
+            text=description,
+            font=("Helvetica", 11),
+            foreground='#757575'
+        ).pack(pady=(0, 15))
         
         ttk.Button(
-            dashboard_frame,
-            text="Book a Seat",
-            command=self.show_booking_form
-        ).pack(pady=5, fill=tk.X)
-        
-        ttk.Button(
-            dashboard_frame,
-            text="View My Bookings",
-            command=self.show_my_bookings
-        ).pack(pady=5, fill=tk.X)
-        
-        ttk.Button(
-            dashboard_frame,
-            text="Logout",
-            command=self.logout
-        ).pack(pady=5, fill=tk.X)
+            card,
+            text="Open",
+            style='Action.TButton',
+            command=command
+        ).pack(pady=(0, 20))
 
     def handle_register(self, name, email, password):
         # Input validation
@@ -213,87 +341,215 @@ class TransConnectApp:
         for widget in self.main_frame.winfo_children()[1:]:
             widget.destroy()
         
+        # Create container
         routes_frame = ttk.Frame(self.main_frame)
         routes_frame.pack(pady=20, fill=tk.BOTH, expand=True)
         
-        # Display routes
+        # Header
+        ttk.Label(
+            routes_frame,
+            text="Available Routes",
+            font=("Helvetica", 24, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(0, 20))
+        
+        # Routes container
+        routes_container = ttk.Frame(routes_frame)
+        routes_container.pack(fill=tk.BOTH, expand=True, padx=40)
+        
+        # Display routes in modern cards
         for route_id, route_info in ROUTES.items():
-            route_frame = ttk.Frame(routes_frame)
-            route_frame.pack(pady=10, fill=tk.X)
+            route_card = ttk.Frame(routes_container, style='Card.TFrame')
+            route_card.pack(pady=10, fill=tk.X, ipady=15)
+            
+            # Route header
+            ttk.Label(
+                route_card,
+                text=f"Route {route_id}",
+                font=("Helvetica", 14, "bold"),
+                foreground='#2196F3'
+            ).pack(anchor="w", padx=20, pady=(10, 5))
             
             ttk.Label(
-                route_frame,
-                text=f"Route {route_id}: {route_info['name']}",
-                font=("Helvetica", 12, "bold")
+                route_card,
+                text=route_info['name'],
+                font=("Helvetica", 12, "bold"),
+                foreground='#424242'
+            ).pack(anchor="w", padx=20)
+            
+            # Route details
+            details_frame = ttk.Frame(route_card)
+            details_frame.pack(fill=tk.X, padx=20, pady=(10, 0))
+            
+            # Schedule
+            schedule_frame = ttk.Frame(details_frame)
+            schedule_frame.pack(side=tk.LEFT, padx=(0, 30))
+            
+            ttk.Label(
+                schedule_frame,
+                text="Schedule",
+                font=("Helvetica", 10),
+                foreground='#757575'
             ).pack(anchor="w")
             
             ttk.Label(
-                route_frame,
-                text=f"Schedule: {route_info['schedule']} | Available Seats: {route_info['seats']}"
+                schedule_frame,
+                text=route_info['schedule'],
+                font=("Helvetica", 12, "bold"),
+                foreground='#424242'
+            ).pack(anchor="w")
+            
+            # Available seats
+            seats_frame = ttk.Frame(details_frame)
+            seats_frame.pack(side=tk.LEFT)
+            
+            ttk.Label(
+                seats_frame,
+                text="Available Seats",
+                font=("Helvetica", 10),
+                foreground='#757575'
+            ).pack(anchor="w")
+            
+            ttk.Label(
+                seats_frame,
+                text=str(route_info['seats']),
+                font=("Helvetica", 12, "bold"),
+                foreground='#424242'
             ).pack(anchor="w")
         
         # Back button
         ttk.Button(
             routes_frame,
             text="Back to Dashboard",
+            style='Action.TButton',
             command=self.show_user_dashboard
-        ).pack(pady=20)
+        ).pack(pady=30)
 
     def show_booking_form(self):
         # Clear previous frames
         for widget in self.main_frame.winfo_children()[1:]:
             widget.destroy()
         
-        booking_frame = ttk.Frame(self.main_frame)
-        booking_frame.pack(pady=20)
+        # Create booking container
+        booking_frame = ttk.Frame(self.main_frame, style='Card.TFrame')
+        booking_frame.pack(pady=20, padx=40, ipadx=40, ipady=30)
         
-        ttk.Label(booking_frame, text="Select Route:").pack(pady=5)
+        # Booking header
+        ttk.Label(
+            booking_frame,
+            text="Book Your Trip",
+            font=("Helvetica", 24, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(20, 10))
+        
+        ttk.Label(
+            booking_frame,
+            text="Select your preferred route and schedule",
+            font=("Helvetica", 12),
+            foreground='#757575'
+        ).pack(pady=(0, 30))
+        
+        # Route selection
+        ttk.Label(
+            booking_frame,
+            text="Select Route",
+            font=("Helvetica", 11, "bold"),
+            foreground='#424242'
+        ).pack(anchor='w', padx=20, pady=(10, 5))
+        
         route_var = tk.StringVar()
-        route_combo = ttk.Combobox(booking_frame, textvariable=route_var)
+        route_combo = ttk.Combobox(
+            booking_frame,
+            textvariable=route_var,
+            font=("Helvetica", 11),
+            width=40
+        )
         route_combo['values'] = [f"{r['name']}" for r in ROUTES.values()]
-        route_combo.pack(pady=5)
+        route_combo.pack(padx=20, pady=(0, 20))
         
+        # Button container
+        button_frame = ttk.Frame(booking_frame)
+        button_frame.pack(pady=30)
+        
+        # Action buttons
         ttk.Button(
-            booking_frame,
-            text="Book Seat",
+            button_frame,
+            text="Confirm Booking",
+            style='Action.TButton',
             command=lambda: self.handle_booking(route_var.get())
-        ).pack(pady=20)
+        ).pack(side=tk.LEFT, padx=10)
         
         ttk.Button(
-            booking_frame,
+            button_frame,
             text="Back to Dashboard",
+            style='Action.TButton',
             command=self.show_user_dashboard
-        ).pack()
+        ).pack(side=tk.LEFT, padx=10)
 
     def show_my_bookings(self):
         # Clear previous frames
         for widget in self.main_frame.winfo_children()[1:]:
             widget.destroy()
         
+        # Create bookings container
         bookings_frame = ttk.Frame(self.main_frame)
         bookings_frame.pack(pady=20, fill=tk.BOTH, expand=True)
         
+        # Header
+        ttk.Label(
+            bookings_frame,
+            text="My Bookings",
+            font=("Helvetica", 24, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(0, 20))
+        
+        # Bookings container
+        bookings_container = ttk.Frame(bookings_frame)
+        bookings_container.pack(fill=tk.BOTH, expand=True, padx=40)
+        
         if not users[self.current_user]['bookings']:
+            empty_frame = ttk.Frame(bookings_container, style='Card.TFrame')
+            empty_frame.pack(pady=20, ipady=30, fill=tk.X)
+            
             ttk.Label(
-                bookings_frame,
-                text="No bookings found.",
-                font=("Helvetica", 12)
-            ).pack(pady=20)
+                empty_frame,
+                text="No bookings found",
+                font=("Helvetica", 14),
+                foreground='#757575'
+            ).pack()
+            
+            ttk.Label(
+                empty_frame,
+                text="Book your first trip now!",
+                font=("Helvetica", 12),
+                foreground='#757575'
+            ).pack()
         else:
             for booking in users[self.current_user]['bookings']:
-                booking_frame = ttk.Frame(bookings_frame)
-                booking_frame.pack(pady=10, fill=tk.X)
+                booking_card = ttk.Frame(bookings_container, style='Card.TFrame')
+                booking_card.pack(pady=10, fill=tk.X, ipady=15)
                 
                 ttk.Label(
-                    booking_frame,
-                    text=f"Route: {booking['route_name']} | Date: {booking['date']}"
-                ).pack(anchor="w")
+                    booking_card,
+                    text=booking['route_name'],
+                    font=("Helvetica", 14, "bold"),
+                    foreground='#2196F3'
+                ).pack(anchor="w", padx=20, pady=(10, 5))
+                
+                ttk.Label(
+                    booking_card,
+                    text=f"Travel Date: {booking['date']}",
+                    font=("Helvetica", 12),
+                    foreground='#424242'
+                ).pack(anchor="w", padx=20)
         
+        # Back button
         ttk.Button(
             bookings_frame,
             text="Back to Dashboard",
+            style='Action.TButton',
             command=self.show_user_dashboard
-        ).pack(pady=20)
+        ).pack(pady=30)
 
     def handle_booking(self, route_name):
         if not route_name:

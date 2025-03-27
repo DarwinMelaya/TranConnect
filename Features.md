@@ -32,3 +32,7 @@ View booking history
 === Need to install ===
 
 pip install ttkbootstrap
+
+== Diagram Maker ==
+
+https://app.diagrams.net/
