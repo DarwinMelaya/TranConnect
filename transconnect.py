@@ -560,9 +560,12 @@ class TransConnectApp:
                     foreground='#2196F3'
                 ).pack(anchor="w", padx=20, pady=(10, 5))
                 
+                # Get schedule time from ROUTES using route_id
+                schedule_time = ROUTES[booking['route_id']]['schedule']
+                
                 ttk.Label(
                     booking_card,
-                    text=f"Travel Date: {booking['date']}",
+                    text=f"Travel Date: {booking['date']} at {schedule_time}",
                     font=("Helvetica", 12),
                     foreground='#424242'
                 ).pack(anchor="w", padx=20)
