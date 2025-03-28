@@ -1,32 +1,35 @@
 ```mermaid
 flowchart TD
     A[Start Application] --> B[Show Login Screen]
-    B --> C{User Choice}
+    B --> C{Existing User?}
 
-    C -->|Login| D[Enter Email & Password]
-    C -->|Register| E[Enter Registration Details]
+    C -->|No| E[Enter Registration Details]
+    C -->|Yes| D[Enter Email & Password]
 
-    E --> F[Validate Registration]
-    F -->|Success| B
-    F -->|Failed| E
+    E --> F{Registration Valid?}
+    F -->|Yes| B
+    F -->|No| E
 
-    D --> G[Validate Login]
-    G -->|Failed| D
-    G -->|Success| H[Dashboard]
+    D --> G{Login Valid?}
+    G -->|No| D
+    G -->|Yes| H[Dashboard]
 
-    H --> I{Dashboard Options}
+    H --> I{Select Action}
 
     I -->|View Routes| J[Display Available Routes]
-    I -->|Book a Seat| K[Show Booking Form]
-    I -->|My Bookings| L[Show User Bookings]
-    I -->|Logout| B
+    J --> O{View Map?}
+    O -->|Yes| P[Show Route Map]
+    O -->|No| H
+    P --> H
 
+    I -->|Book Seat| K[Show Booking Form]
     K --> M[Select Route]
-    M --> N[Confirm Booking]
-    N -->|Success| H
-    N -->|Failed| K
+    M --> N{Booking Confirmed?}
+    N -->|Yes| H
+    N -->|No| K
 
-    J --> O[View Map]
-    O --> H
+    I -->|View Bookings| L[Show User Bookings]
     L --> H
+
+    I -->|Logout| B
 ```

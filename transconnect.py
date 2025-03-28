@@ -320,20 +320,23 @@ class TransConnectApp:
             foreground='#757575'
         ).pack(pady=(0, 15))
         
-        ttk.Button(
-            card,
-            text="Open",
-            style='Action.TButton',
-            command=command
-        ).pack(pady=(0, 20))
+        # Change button text to "Logout" for the logout card
+        button_text = "Logout" if title == "Logout" else "Open"
         
-        # Add map button to dashboard
-        if title == "View Routes":
+        # For logout, wrap the command in a confirmation dialog
+        if title == "Logout":
             ttk.Button(
                 card,
-                text="View Map",
+                text=button_text,
                 style='Action.TButton',
-                command=self.show_location_map
+                command=lambda: self.confirm_logout(command)
+            ).pack(pady=(0, 20))
+        else:
+            ttk.Button(
+                card,
+                text=button_text,
+                style='Action.TButton',
+                command=command
             ).pack(pady=(0, 20))
 
     def handle_register(self, name, email, password):
@@ -714,6 +717,11 @@ class TransConnectApp:
             style='Action.TButton',
             command=self.show_user_dashboard
         ).pack(pady=30)
+
+    def confirm_logout(self, logout_command):
+        """Show confirmation dialog before logging out"""
+        if messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?"):
+            logout_command()
 
 # Update the main function to use the GUI
 def main():
