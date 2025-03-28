@@ -636,9 +636,36 @@ class TransConnectApp:
             }
             users[self.current_user]['bookings'].append(booking)
             messagebox.showinfo("Success", "Booking confirmed!")
-            self.show_user_dashboard()
+            
+            # Show route on Google Maps
+            self.show_google_maps_route(route_id)
         else:
             messagebox.showerror("Error", "No seats available!")
+
+    def show_google_maps_route(self, route_id):
+        """Display the route on Google Maps in the default web browser"""
+        route = ROUTES[route_id]
+        
+        # Extract coordinates
+        start_coords = route['start_gps'].replace(' ', '')
+        end_coords = route['end_gps'].replace(' ', '')
+        
+        # Create Google Maps URL with route
+        maps_url = (
+            f"https://www.google.com/maps/dir/{start_coords}/{end_coords}"
+            "?travelmode=driving"
+        )
+        
+        # Open in default web browser
+        webbrowser.open(maps_url)
+        
+        # Show success message
+        messagebox.showinfo(
+            "Route Map",
+            "The route has been opened in your web browser using Google Maps."
+        )
+        
+        self.show_user_dashboard()
 
     def logout(self):
         self.current_user = None
