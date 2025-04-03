@@ -80,28 +80,45 @@ class TransConnectApp:
     def __init__(self, root):
         self.root = root
         self.root.title("TransConnect")
-        self.root.geometry("1024x768")  # Larger window
+        self.root.geometry("1024x768")
         self.current_user = None
         
-        # Configure style with a modern theme and custom colors
+        # Configure style with a light theme and custom colors
         style = ttk.Style()
-        style.theme_use('darkly')
+        style.theme_use('litera')  # Using a light theme
         
-        # Configure custom styles
-        style.configure('Header.TLabel', font=("Helvetica", 32, "bold"), foreground='#2196F3')
-        style.configure('SubHeader.TLabel', font=("Helvetica", 14), foreground='#757575')
-        style.configure('Card.TFrame', background='#2A2A2A', relief='raised', borderwidth=1)
-        style.configure('Action.TButton', font=("Helvetica", 11), padding=10)
+        # Configure custom styles with white background and modern accents
+        style.configure('Header.TLabel', 
+                       font=("Helvetica", 32, "bold"), 
+                       foreground='#1976D2')  # Darker blue
+        style.configure('SubHeader.TLabel', 
+                       font=("Helvetica", 14), 
+                       foreground='#616161')  # Darker gray
+        style.configure('Card.TFrame', 
+                       background='#FFFFFF',
+                       relief='solid',
+                       borderwidth=1)
+        style.configure('Action.TButton', 
+                       font=("Helvetica", 11),
+                       padding=10,
+                       background='#1976D2')  # Blue buttons
+        
+        # Configure the root window background
+        self.root.configure(bg='#F5F5F5')  # Light gray background
         
         self.setup_main_frame()
         self.show_login_frame()
     
     def setup_main_frame(self):
-        # Create main container with gradient background
-        self.main_frame = ttk.Frame(self.root, padding="40")
+        # Create main container with white background
+        self.main_frame = ttk.Frame(self.root, padding="40", style='TFrame')
         self.main_frame.pack(fill=tk.BOTH, expand=True)
         
-        # Header with logo and tagline
+        # Configure main frame background
+        style = ttk.Style()
+        style.configure('TFrame', background='#F5F5F5')
+        
+        # Header with modern styling
         header = ttk.Label(
             self.main_frame,
             text="TransConnect",
@@ -303,41 +320,45 @@ class TransConnectApp:
         )
 
     def create_dashboard_card(self, parent, row, col, title, description, command):
+        # Updated card style with shadows and hover effect
         card = ttk.Frame(parent, style='Card.TFrame')
-        card.grid(row=row, column=col, padx=10, pady=10, sticky='nsew')
+        card.grid(row=row, column=col, padx=15, pady=15, sticky='nsew')
+        
+        # Add padding and modern styling
+        inner_frame = ttk.Frame(card)
+        inner_frame.pack(padx=20, pady=20, fill=tk.BOTH, expand=True)
         
         ttk.Label(
-            card,
+            inner_frame,
             text=title,
             font=("Helvetica", 16, "bold"),
-            foreground='#2196F3'
-        ).pack(pady=(20, 5))
+            foreground='#1976D2'  # Darker blue
+        ).pack(pady=(0, 5))
         
         ttk.Label(
-            card,
+            inner_frame,
             text=description,
             font=("Helvetica", 11),
-            foreground='#757575'
+            foreground='#616161'  # Darker gray
         ).pack(pady=(0, 15))
         
-        # Change button text to "Logout" for the logout card
         button_text = "Logout" if title == "Logout" else "Open"
+        button_style = 'Danger.TButton' if title == "Logout" else 'Action.TButton'
         
-        # For logout, wrap the command in a confirmation dialog
         if title == "Logout":
             ttk.Button(
-                card,
+                inner_frame,
                 text=button_text,
-                style='Action.TButton',
+                style=button_style,
                 command=lambda: self.confirm_logout(command)
-            ).pack(pady=(0, 20))
+            ).pack(pady=(0, 0))
         else:
             ttk.Button(
-                card,
+                inner_frame,
                 text=button_text,
-                style='Action.TButton',
+                style=button_style,
                 command=command
-            ).pack(pady=(0, 20))
+            ).pack(pady=(0, 0))
 
     def handle_register(self, name, email, password):
         # Input validation
@@ -408,28 +429,32 @@ class TransConnectApp:
         scrollbar.pack(side="right", fill="y")
         canvas.pack(side="left", fill="both", expand=True, padx=(40, 0))
         
-        # Display routes in modern cards
+        # Update route cards with modern styling
         for route_id, route_info in ROUTES.items():
             route_card = ttk.Frame(scrollable_frame, style='Card.TFrame')
-            route_card.pack(pady=10, fill=tk.X, ipady=15)
+            route_card.pack(pady=10, fill=tk.X)
             
-            # Route header
+            # Add inner padding
+            inner_card = ttk.Frame(route_card)
+            inner_card.pack(padx=20, pady=20, fill=tk.X)
+            
+            # Route header with updated colors
             ttk.Label(
-                route_card,
+                inner_card,
                 text=f"Route {route_id}",
                 font=("Helvetica", 14, "bold"),
-                foreground='#2196F3'
-            ).pack(anchor="w", padx=20, pady=(10, 5))
+                foreground='#1976D2'  # Darker blue
+            ).pack(anchor="w", pady=(0, 5))
             
             ttk.Label(
-                route_card,
+                inner_card,
                 text=route_info['name'],
                 font=("Helvetica", 12, "bold"),
                 foreground='#424242'
-            ).pack(anchor="w", padx=20)
+            ).pack(anchor="w")
             
             # Route details
-            details_frame = ttk.Frame(route_card)
+            details_frame = ttk.Frame(inner_card)
             details_frame.pack(fill=tk.X, padx=20, pady=(10, 0))
             
             # Schedule

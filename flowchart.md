@@ -17,19 +17,19 @@ flowchart TD
     H --> I{Select Action}
 
     I -->|View Routes| J[Display Available Routes]
-    J --> O{View Map?}
-    O -->|Yes| P[Show Route Map]
-    O -->|No| H
-    P --> H
+    J --> H
 
     I -->|Book Seat| K[Show Booking Form]
     K --> M[Select Route]
     M --> N{Booking Confirmed?}
-    N -->|Yes| H
+    N -->|Yes| Q[Show Google Maps Route]
+    Q --> H
     N -->|No| K
 
-    I -->|View Bookings| L[Show User Bookings]
+    I -->|My Bookings| L[Show User Bookings]
     L --> H
 
-    I -->|Logout| B
+    I -->|Logout| R{Confirm Logout?}
+    R -->|Yes| B
+    R -->|No| H
 ```
