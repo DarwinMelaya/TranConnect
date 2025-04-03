@@ -22,43 +22,43 @@ bookings: List[Dict] = []
 ROUTES = {
     1: {
         "name": "Boac to Mogpog",
-        "start_gps": "13.4488, 121.8386",  # Boac town proper
-        "end_gps": "13.4819, 121.8637",    # Mogpog town proper
+        "start_gps": "13.449078, 121.839003",  # Boac town proper
+        "end_gps": "13.473615, 121.860948",    # Mogpog town proper
         "seats": 15,
         "schedule": "7:00 AM"
     },
     2: {
         "name": "Mogpog to Santa Cruz", 
-        "start_gps": "13.4819, 121.8637",  # Mogpog town proper
-        "end_gps": "13.4280, 122.0094",    # Santa Cruz town proper
+        "start_gps": "13.473615, 121.860948",  # Mogpog town proper
+        "end_gps": "13.475758368354766, 122.03110517819835",    # Santa Cruz town proper
         "seats": 15,
         "schedule": "9:00 AM"
     },
     3: {
         "name": "Santa Cruz to Torrijos",
-        "start_gps": "13.4280, 122.0094",  # Santa Cruz town proper
-        "end_gps": "13.3127, 122.0871",    # Torrijos town proper
+        "start_gps": "13.475758368354766, 122.03110517819835",  # Santa Cruz town proper
+        "end_gps": "13.320148, 122.084475",    # Torrijos town proper
         "seats": 15,
         "schedule": "11:00 AM"
     },
     4: {
         "name": "Torrijos to Buenavista",
-        "start_gps": "13.3127, 122.0871",  # Torrijos town proper
-        "end_gps": "13.2574, 121.9226",    # Buenavista town proper
+        "start_gps": "13.320148, 122.084475",  # Torrijos town proper
+        "end_gps": "13.473615, 121.860948",    # Buenavista town proper DONE
         "seats": 15,
         "schedule": "1:00 PM"
     },
     5: {
         "name": "Buenavista to Gasan",
-        "start_gps": "13.2574, 121.9226",  # Buenavista town proper
-        "end_gps": "13.3197, 121.8685",    # Gasan town proper
+        "start_gps": "13.473615, 121.860948",  # Buenavista town proper
+        "end_gps": "13.328510, 121.845800",    # Gasan town proper
         "seats": 15,
         "schedule": "3:00 PM"
     },
     6: {
         "name": "Gasan to Boac",
-        "start_gps": "13.3197, 121.8685",  # Gasan town proper
-        "end_gps": "13.4488, 121.8386",    # Boac town proper
+        "start_gps": "13.328510, 121.845800",  # Gasan town proper
+        "end_gps": "13.449078, 121.839003",    # Boac town proper
         "seats": 15,
         "schedule": "3:00 PM"
     }
@@ -708,51 +708,74 @@ class TransConnectApp:
         # Header
         ttk.Label(
             map_frame,
-            text="Location & Routes Map",
+            text="Marinduque Municipality Map",
             font=("Helvetica", 24, "bold"),
             foreground='#2196F3'
         ).pack(pady=(0, 20))
         
         # Create a map centered on Marinduque
         m = folium.Map(
-            location=[13.4013, 121.9694],
+            location=[13.4013, 121.9694],  # Center of Marinduque
             zoom_start=11
         )
         
-        # Add markers and lines for all routes
+        # Define municipality locations with proper names and coordinates
+        municipalities = {
+            "Boac": {"coords": [13.4488, 121.8386], "color": "red"},        # Provincial Capital
+            "Mogpog": {"coords": [13.4819, 121.8637], "color": "blue"},
+            "Santa Cruz": {"coords": [13.4280, 122.0094], "color": "green"},
+            "Torrijos": {"coords": [13.3127, 122.0871], "color": "purple"},
+            "Buenavista": {"coords": [13.2574, 121.9226], "color": "orange"},
+            "Gasan": {"coords": [13.3197, 121.8685], "color": "darkblue"}
+        }
+        
+        # Add markers for each municipality
+        for name, data in municipalities.items():
+            # Add municipality marker
+            folium.Marker(
+                data["coords"],
+                popup=f"{name} Municipality",
+                tooltip=name,
+                icon=folium.Icon(color=data["color"], icon='info-sign')
+            ).add_to(m)
+        
+        # Draw routes between municipalities
         for route_id, route in ROUTES.items():
             # Parse start and end coordinates
-            start_coords = [float(x.strip('° NSEW')) for x in route['start_gps'].split(',')]
-            end_coords = [float(x.strip('° NSEW')) for x in route['end_gps'].split(',')]
-            
-            # Add markers for start and end points
-            folium.Marker(
-                start_coords,
-                popup=f"Start: {route['name']}",
-                icon=folium.Icon(color='green')
-            ).add_to(m)
-            
-            folium.Marker(
-                end_coords,
-                popup=f"End: {route['name']}",
-                icon=folium.Icon(color='blue')
-            ).add_to(m)
+            start_coords = [float(x.strip()) for x in route['start_gps'].split(',')]
+            end_coords = [float(x.strip()) for x in route['end_gps'].split(',')]
             
             # Draw line between points
             folium.PolyLine(
                 locations=[start_coords, end_coords],
-                weight=2,
+                weight=3,
                 color='red',
+                opacity=0.6,
                 popup=f"Route {route_id}: {route['name']}"
             ).add_to(m)
         
         # Save map to HTML file
-        map_file = "route_map.html"
+        map_file = "marinduque_municipalities.html"
         m.save(map_file)
         
         # Create info frame
         info_frame = ttk.Frame(map_frame, style='Card.TFrame')
         info_frame.pack(fill=tk.X, padx=40, pady=20)
+        
+        # Add legend information
+        ttk.Label(
+            info_frame,
+            text="Municipality Information",
+            font=("Helvetica", 14, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(10, 5))
+        
+        ttk.Label(
+            info_frame,
+            text="Click on markers to see municipality names\nRed lines show transportation routes",
+            font=("Helvetica", 11),
+            foreground='#616161'
+        ).pack(pady=(0, 10))
         
         # Button to open map in browser
         ttk.Button(
