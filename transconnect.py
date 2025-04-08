@@ -14,7 +14,14 @@ import os
 # Create in-memory storage using dictionaries and lists
 # users: stores user information like name, email, password, and their bookings
 # bookings: stores all booking information across the system
-users: Dict[str, Dict] = {}
+users: Dict[str, Dict] = {
+    "admin@gmail.com": {
+        "name": "Admin",
+        "password": "admin123",
+        "is_admin": True,
+        "bookings": []
+    }
+}
 bookings: List[Dict] = []
 
 # Define available transportation routes in Marinduque
@@ -82,6 +89,7 @@ class TransConnectApp:
         self.root.title("TransConnect")
         self.root.geometry("1024x768")
         self.current_user = None
+        self.is_admin = False
         
         # Configure style with a light theme and custom colors
         style = ttk.Style()
@@ -390,7 +398,11 @@ class TransConnectApp:
         # Check if user exists and password matches
         if email in users and users[email]["password"] == password:
             self.current_user = email
-            self.show_user_dashboard()
+            self.is_admin = users[email].get("is_admin", False)  # Check if user is admin
+            if self.is_admin:
+                self.show_admin_dashboard()
+            else:
+                self.show_user_dashboard()
         else:
             messagebox.showerror("Error", "Invalid email or password!")
 
@@ -797,6 +809,246 @@ class TransConnectApp:
         """Show confirmation dialog before logging out"""
         if messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?"):
             logout_command()
+
+    def show_admin_dashboard(self):
+        # Clear previous frames
+        for widget in self.main_frame.winfo_children()[1:]:
+            widget.destroy()
+        
+        # Create modern dashboard layout
+        dashboard_frame = ttk.Frame(self.main_frame)
+        dashboard_frame.pack(pady=20, fill=tk.BOTH, expand=True)
+        
+        # Welcome section with admin info
+        welcome_frame = ttk.Frame(dashboard_frame, style='Card.TFrame')
+        welcome_frame.pack(fill=tk.X, padx=20, pady=10, ipady=15)
+        
+        ttk.Label(
+            welcome_frame,
+            text="Admin Dashboard",
+            font=("Helvetica", 20, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(10, 5))
+        
+        ttk.Label(
+            welcome_frame,
+            text="Manage routes and seats",
+            font=("Helvetica", 12),
+            foreground='#757575'
+        ).pack()
+        
+        # Dashboard grid layout
+        grid_frame = ttk.Frame(dashboard_frame)
+        grid_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        grid_frame.columnconfigure(0, weight=1)
+        grid_frame.columnconfigure(1, weight=1)
+        
+        # Dashboard cards
+        self.create_dashboard_card(
+            grid_frame, 0, 0,
+            "Manage Seats",
+            "Update available seats for routes",
+            self.show_seat_management
+        )
+        
+        self.create_dashboard_card(
+            grid_frame, 0, 1,
+            "View Routes",
+            "Browse all transportation routes",
+            self.show_routes
+        )
+        
+        self.create_dashboard_card(
+            grid_frame, 1, 0,
+            "View All Bookings",
+            "Check all user bookings",
+            self.show_all_bookings
+        )
+        
+        self.create_dashboard_card(
+            grid_frame, 1, 1,
+            "Logout",
+            "Sign out of admin account",
+            self.logout
+        )
+
+    def show_seat_management(self):
+        # Clear previous frames
+        for widget in self.main_frame.winfo_children()[1:]:
+            widget.destroy()
+        
+        # Create container
+        seats_frame = ttk.Frame(self.main_frame)
+        seats_frame.pack(pady=20, fill=tk.BOTH, expand=True)
+        
+        # Header
+        ttk.Label(
+            seats_frame,
+            text="Manage Available Seats",
+            font=("Helvetica", 24, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(0, 20))
+        
+        # Create scrollable frame
+        canvas = tk.Canvas(seats_frame)
+        scrollbar = ttk.Scrollbar(seats_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Pack scrollbar and canvas
+        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True, padx=(40, 0))
+        
+        # Create entry widgets for each route
+        entries = {}
+        for route_id, route_info in ROUTES.items():
+            route_card = ttk.Frame(scrollable_frame, style='Card.TFrame')
+            route_card.pack(pady=10, fill=tk.X, padx=20)
+            
+            # Route info
+            ttk.Label(
+                route_card,
+                text=f"Route {route_id}: {route_info['name']}",
+                font=("Helvetica", 14, "bold"),
+                foreground='#1976D2'
+            ).pack(pady=10, padx=20)
+            
+            # Seats entry
+            seats_frame = ttk.Frame(route_card)
+            seats_frame.pack(pady=(0, 10), padx=20)
+            
+            ttk.Label(
+                seats_frame,
+                text="Available Seats:",
+                font=("Helvetica", 12)
+            ).pack(side=tk.LEFT, padx=(0, 10))
+            
+            seats_entry = ttk.Entry(seats_frame, width=10)
+            seats_entry.insert(0, str(route_info['seats']))
+            seats_entry.pack(side=tk.LEFT)
+            
+            entries[route_id] = seats_entry
+        
+        # Update button
+        def update_seats():
+            try:
+                for route_id, entry in entries.items():
+                    new_seats = int(entry.get())
+                    if new_seats < 0:
+                        raise ValueError
+                    ROUTES[route_id]['seats'] = new_seats
+                messagebox.showinfo("Success", "Seats updated successfully!")
+            except ValueError:
+                messagebox.showerror("Error", "Please enter valid numbers for seats!")
+        
+        button_frame = ttk.Frame(scrollable_frame)
+        button_frame.pack(pady=20)
+        
+        ttk.Button(
+            button_frame,
+            text="Update Seats",
+            style='Action.TButton',
+            command=update_seats
+        ).pack(side=tk.LEFT, padx=10)
+        
+        ttk.Button(
+            button_frame,
+            text="Back to Dashboard",
+            style='Action.TButton',
+            command=lambda: self.show_admin_dashboard()
+        ).pack(side=tk.LEFT, padx=10)
+
+    def show_all_bookings(self):
+        # Clear previous frames
+        for widget in self.main_frame.winfo_children()[1:]:
+            widget.destroy()
+        
+        # Create bookings container
+        bookings_frame = ttk.Frame(self.main_frame)
+        bookings_frame.pack(pady=20, fill=tk.BOTH, expand=True)
+        
+        # Header
+        ttk.Label(
+            bookings_frame,
+            text="All Bookings",
+            font=("Helvetica", 24, "bold"),
+            foreground='#2196F3'
+        ).pack(pady=(0, 20))
+        
+        # Create scrollable frame
+        canvas = tk.Canvas(bookings_frame)
+        scrollbar = ttk.Scrollbar(bookings_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Pack scrollbar and canvas
+        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True, padx=(40, 0))
+        
+        # Show all bookings from all users
+        has_bookings = False
+        for email, user_info in users.items():
+            if not user_info.get('is_admin', False) and user_info['bookings']:
+                has_bookings = True
+                user_frame = ttk.Frame(scrollable_frame, style='Card.TFrame')
+                user_frame.pack(pady=10, fill=tk.X, padx=20)
+                
+                ttk.Label(
+                    user_frame,
+                    text=f"User: {user_info['name']} ({email})",
+                    font=("Helvetica", 14, "bold"),
+                    foreground='#1976D2'
+                ).pack(pady=10, padx=20)
+                
+                for booking in user_info['bookings']:
+                    booking_frame = ttk.Frame(user_frame)
+                    booking_frame.pack(pady=5, padx=20, fill=tk.X)
+                    
+                    ttk.Label(
+                        booking_frame,
+                        text=f"Route: {booking['route_name']}",
+                        font=("Helvetica", 12)
+                    ).pack(anchor="w")
+                    
+                    schedule_time = ROUTES[booking['route_id']]['schedule']
+                    ttk.Label(
+                        booking_frame,
+                        text=f"Date: {booking['date']} at {schedule_time}",
+                        font=("Helvetica", 12)
+                    ).pack(anchor="w")
+        
+        if not has_bookings:
+            empty_frame = ttk.Frame(scrollable_frame, style='Card.TFrame')
+            empty_frame.pack(pady=20, ipady=30, fill=tk.X)
+            
+            ttk.Label(
+                empty_frame,
+                text="No bookings found",
+                font=("Helvetica", 14),
+                foreground='#757575'
+            ).pack()
+        
+        # Back button
+        ttk.Button(
+            bookings_frame,
+            text="Back to Dashboard",
+            style='Action.TButton',
+            command=self.show_admin_dashboard
+        ).pack(pady=30)
 
 # Update the main function to use the GUI
 def main():

@@ -35,6 +35,8 @@ pip install ttkbootstrap
 
 pip install geopy folium
 
+== Need to install in Spyder IDE ==
+
 == Diagram Maker ==
 
 https://app.diagrams.net/
